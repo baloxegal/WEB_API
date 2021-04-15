@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,11 +13,9 @@ namespace WEB_API.DTO
         public string Name { get; set; }
         public bool IsComplete { get; set; }
 
-        public ToDoItemDTO(TodoItem toDoItem)
+        public static implicit operator ToDoItemDTO(ActionResult<ToDoItemDTO> v)
         {
-            Id = toDoItem.Id;
-            Name = toDoItem.Name;
-            IsComplete = toDoItem.IsComplete;
+            throw new NotImplementedException();
         }
     }
 }
