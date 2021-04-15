@@ -16,12 +16,13 @@ namespace WEB_API.Controllers
     [ApiController]
     public class ToDoItemsController : ControllerBase
     {
-        private readonly ToDoContext _context;
+        //private readonly ToDoContext _context;
         private readonly IRepository<ToDoItem, ToDoItemDTO> _repo;
 
-        public ToDoItemsController()
+        public ToDoItemsController(ToDoContext context)
         {
-            _repo = new ToDoItemRepository(_context);
+            _repo = new ToDoItemRepository(context);
+
         }
 
         // GET: api/TodoItems
@@ -110,7 +111,7 @@ namespace WEB_API.Controllers
             return CreatedAtAction(
                 nameof(ReadToDoItem),
                 new { id = toDoItemDTO.Id },
-                toDoItem);
+                toDoItemDTO);
         }
 
         // DELETE: api/TodoItems/5

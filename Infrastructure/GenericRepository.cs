@@ -84,9 +84,9 @@ namespace WEB_API.Infrastructure
         [HttpPost]
         public async Task<ActionResult<DTO>> CreateToDoItem(DTO toDoItemDTO)
         {
-            T toDoItem = (T)toDoItemDTO;
+            //T toDoItem = (T) toDoItemDTO;
             
-            _table.Add(toDoItem);
+            _table.Add((T)toDoItemDTO);
             await _context.SaveChangesAsync();
 
             return toDoItemDTO;
