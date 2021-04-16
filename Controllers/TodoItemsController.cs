@@ -16,7 +16,6 @@ namespace WEB_API.Controllers
     [ApiController]
     public class ToDoItemsController : ControllerBase
     {
-        //private readonly ToDoContext _context;
         private readonly IRepository<ToDoItem, ToDoItemDTO> _repo;
 
         public ToDoItemsController(ToDoContext context)
@@ -29,7 +28,10 @@ namespace WEB_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ToDoItemDTO>>> ReadToDoItems()
         {
-            return await _repo.ReadToDoItems();
+            var collection = await _repo.ReadToDoItems();
+            if (collection.Value.Count() == 0)
+                return NoContent();
+            return collection;
         }
 
         // GET: api/TodoItems/5
@@ -54,64 +56,66 @@ namespace WEB_API.Controllers
             {
                 return BadRequest();
             }
-
-            ToDoItemDTO toDoItemBase = null;
-
+                        
             try
             {
-                toDoItemBase = await _repo.ReadToDoItem(id);
+                var toDoItemBase = await _repo.UpdateToDoItem(id, toDoItem);
+                if (toDoItemBase == null)
+                {
+                    return NotFound();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
             }
 
-            if (toDoItemBase == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return Ok();
         }
 
         // PATCH: api/TodoItems/5
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateToDoItem(long id, ToDoItemDTO todoItemDTO)
+        public async Task<IActionResult> UpdateToDoItem(long id, ToDoItemDTO toDoItemDTO)
         {
-            if (id != todoItemDTO.Id)
+            if (id != toDoItemDTO.Id)
             {
                 return BadRequest();
             }
 
-            ToDoItemDTO todoItem = null;
-
             try
-            {
-                todoItem = await _repo.ReadToDoItem(id);
+            {                
+                var toDoItemDTOBase = await _repo.UpdateToDoItem(id, toDoItemDTO);
+                if (toDoItemDTOBase == null)
+                {
+                    return NotFound();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
             }
 
-            if (todoItem == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/TodoItems
         [HttpPost]
         public async Task<ActionResult<ToDoItemDTO>> CreateToDoItem(ToDoItemDTO toDoItemDTO)
-        {   
-            var toDoItem = await _repo.CreateToDoItem(toDoItemDTO);
+        {
+            ToDoItem toDoItem = null;
+            try
+            {
+                toDoItem = await _repo.CreateToDoItem(toDoItemDTO);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
+            }
 
             return CreatedAtAction(
                 nameof(ReadToDoItem),
-                new { id = toDoItemDTO.Id },
-                toDoItemDTO);
+                new { id = toDoItem.Id },
+                ItemToDTO(toDoItem));
         }
 
         // DELETE: api/TodoItems/5
@@ -124,8 +128,16 @@ namespace WEB_API.Controllers
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok();
         }
+
+        public ToDoItemDTO ItemToDTO(ToDoItem toDoItem) =>
+            new ToDoItemDTO
+            {
+                Id = toDoItem.Id,
+                Name = toDoItem.Name,
+                IsComplete = toDoItem.IsComplete
+            };
     }
 
 

@@ -12,6 +12,35 @@ namespace WEB_API.Infrastructure
     {
         public ToDoItemRepository(ToDoContext toDoContext) : base(toDoContext)
         {
+
+        }
+        public override ToDoItemDTO ItemToDTO(ToDoItem toDoItem) =>
+            new ToDoItemDTO
+            {
+                Id = toDoItem.Id,
+                Name = toDoItem.Name,
+                IsComplete = toDoItem.IsComplete
+            };
+        public override ToDoItem DTOToItem(ToDoItemDTO toDoItemDTO) =>
+            new ToDoItem
+            {
+                Id = toDoItemDTO.Id,
+                Name = toDoItemDTO.Name,
+                IsComplete = toDoItemDTO.IsComplete
+            };
+
+        public override void ModifyToDoItemDTO(ToDoItemDTO toDoItemBase, ToDoItemDTO toDoItem)
+        {
+            toDoItemBase.Id = toDoItem.Id;
+            toDoItemBase.Name = toDoItem.Name;
+            toDoItemBase.IsComplete = toDoItem.IsComplete;
+        }
+        public override void ModifyToDoItem(ToDoItem toDoItemBase, ToDoItem toDoItem)
+        {
+            toDoItemBase.Id = toDoItem.Id;
+            toDoItemBase.Name = toDoItem.Name;
+            toDoItemBase.IsComplete = toDoItem.IsComplete;
+            toDoItemBase.Secret = toDoItem.Secret;
         }
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WEB_API.DTO;
 using WEB_API.Models;
 
 namespace WEB_API.Infrastructure
@@ -22,19 +21,19 @@ namespace WEB_API.Infrastructure
         // GET: api/TodoItems
         public async Task<ActionResult<IEnumerable<DTO>>> ReadToDoItems()
         {
-            return await _table.Select(x => ItemToDTO(x)).ToListAsync();
+            return await _table.Select(toDoItem => ItemToDTO(toDoItem)).ToListAsync();
         }
 
         // GET: api/TodoItems/5
-        [HttpGet("{id}")]
         public async Task<ActionResult<DTO>> ReadToDoItem(long id)
         {
             var todoItem = await _table.FindAsync(id);
+            if (todoItem == null)
+                return todoItem;
             return ItemToDTO(todoItem);
         }
 
         // PUT: api/TodoItems/5
-        [HttpPut("{id}")]
         public async Task<ActionResult<T>> UpdateToDoItem(long id, T toDoItem)
         {
             var toDoItemBase = await _table.FindAsync(id);
@@ -43,7 +42,7 @@ namespace WEB_API.Infrastructure
                 return toDoItemBase;
             }
 
-            toDoItemBase = toDoItem;
+            ModifyToDoItem(toDoItemBase, toDoItem);
             
             try
             {
@@ -58,7 +57,6 @@ namespace WEB_API.Infrastructure
         }
 
         // PATCH: api/TodoItems/5
-        [HttpPatch("{id}")]
         public async Task<ActionResult<DTO>> UpdateToDoItem(long id, DTO todoItemDTO)
         {
             var todoItem = await _table.FindAsync(id);
@@ -67,7 +65,8 @@ namespace WEB_API.Infrastructure
                 return todoItem;
             }
 
-            todoItem = (T)todoItemDTO;
+            ModifyToDoItemDTO(todoItem, todoItemDTO);
+            
             try
             {
                 await _context.SaveChangesAsync();
@@ -77,23 +76,27 @@ namespace WEB_API.Infrastructure
                 throw;
             }
 
-            return todoItem;
+            return todoItemDTO;
         }
 
         // POST: api/TodoItems
-        [HttpPost]
-        public async Task<ActionResult<DTO>> CreateToDoItem(DTO toDoItemDTO)
+        public async Task<ActionResult<T>> CreateToDoItem(DTO toDoItemDTO)
         {
-            //T toDoItem = (T) toDoItemDTO;
-            
-            _table.Add((T)toDoItemDTO);
-            await _context.SaveChangesAsync();
+            T toDoItem = DTOToItem(toDoItemDTO);
+            try
+            {
+                _table.Add(toDoItem);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+            }
 
-            return toDoItemDTO;
+            return toDoItem;
         }
 
         // DELETE: api/TodoItems/5
-        [HttpDelete("{id}")]
         public async Task<ActionResult<DTO>> DeleteToDoItem(long id)
         {
             var todoItem = await _table.FindAsync(id);
@@ -105,7 +108,7 @@ namespace WEB_API.Infrastructure
             _table.Remove(todoItem);
             await _context.SaveChangesAsync();
 
-            return todoItem;
+            return ItemToDTO(todoItem);
         }
 
         private bool ToDoItemExists(long id)
@@ -115,14 +118,24 @@ namespace WEB_API.Infrastructure
             
             return false;
         }
-
-        private static DTO ItemToDTO(T toDoItem)
+        public virtual DTO ItemToDTO(T toDoItem)
         {
             DTO toDoItemDTO = toDoItem;
             return toDoItemDTO;
         }
-            
-            
+        public virtual T DTOToItem(DTO toDoItemDTO)
+        {
+            T toDoItem = (T)toDoItemDTO;
+            return toDoItem;
+        }
+        public virtual void ModifyToDoItemDTO(DTO toDoItemBase, DTO toDoItem)
+        {
+        }
+        public virtual void ModifyToDoItem(T toDoItemBase, T toDoItem)
+        {
+        }
+
+
 
 
 

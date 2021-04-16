@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,5 +10,10 @@ namespace WEB_API.Models
     public class ToDoItem : ToDoItemDTO
     {
         public string Secret { get; set; }
+
+        public static implicit operator ToDoItem(ActionResult<ToDoItem> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

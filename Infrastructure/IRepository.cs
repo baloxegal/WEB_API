@@ -1,22 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace WEB_API.Infrastructure
 {
     public interface IRepository<T, DTO> where T : class, DTO
     {
-
-
         public Task<ActionResult<IEnumerable<DTO>>> ReadToDoItems();
         public Task<ActionResult<DTO>> ReadToDoItem(long id);
         public Task<ActionResult<T>> UpdateToDoItem(long id, T toDoItem);
         public Task<ActionResult<DTO>> UpdateToDoItem(long id, DTO todoItemDTO);
-        public Task<ActionResult<DTO>> CreateToDoItem(DTO toDoItemDTO);
-        public Task<ActionResult<DTO>> DeleteToDoItem(long id);
-
+        public Task<ActionResult<T>> CreateToDoItem(DTO toDoItemDTO);
+        public Task<ActionResult<DTO>> DeleteToDoItem(long id);       
 
 
         //IEnumerable<T> FindAll();
