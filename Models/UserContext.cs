@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WEB_API.Models
 {
-    public class ToDoContext : DbContext
+    public class UserContext : DbContext
     {
-        public ToDoContext(DbContextOptions<ToDoContext> options)
+        public UserContext(DbContextOptions<UserContext> options)
             : base(options)
         {
         }
 
-        public DbSet<ToDoItem> ToDoItems { get; set; }
+        public DbSet<User> ToDoItems { get; set; }
     }
 }

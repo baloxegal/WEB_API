@@ -12,80 +12,80 @@ namespace WEB_API.Infrastructure
         public DbContext _context;
         public DbSet<T> _table;
 
-        public GenericRepository(ToDoContext toDoContext)
+        public GenericRepository(UserContext userContext)
         {
-            _context = toDoContext;
+            _context = userContext;
             _table = _context.Set<T>();
         }        
 
-        // GET: api/TodoItems
-        public async Task<ActionResult<IEnumerable<DTO>>> ReadToDoItems()
+        // GET: api/Users
+        public async Task<ActionResult<IEnumerable<DTO>>> ReadUsers()
         {
-            return await _table.Select(toDoItem => ItemToDTO(toDoItem)).ToListAsync();
+            return await _table.Select(user => UserToUserDTO(user)).ToListAsync();
         }
 
-        // GET: api/TodoItems/5
-        public async Task<ActionResult<DTO>> ReadToDoItem(long id)
+        // GET: api/Users/5
+        public async Task<ActionResult<DTO>> ReadUser(long id)
         {
-            var todoItem = await _table.FindAsync(id);
-            if (todoItem == null)
-                return todoItem;
-            return ItemToDTO(todoItem);
+            var user = await _table.FindAsync(id);
+            if (user == null)
+                return user;
+            return UserToUserDTO(user);
         }
 
-        // PUT: api/TodoItems/5
-        public async Task<ActionResult<T>> UpdateToDoItem(long id, T toDoItem)
+        // PUT: api/Users/5
+        public async Task<ActionResult<T>> UpdateUser(long id, T user)
         {
-            var toDoItemBase = await _table.FindAsync(id);
-            if (toDoItemBase == null)
+            var userBase = await _table.FindAsync(id);
+            if (userBase == null)
             {
-                return toDoItemBase;
+                return userBase;
             }
 
-            ModifyToDoItem(toDoItemBase, toDoItem);
+            ModifyUser(userBase, user);
             
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException) when (!ToDoItemExists(id))
+            catch (DbUpdateConcurrencyException) when (!UserExists(id))
             {
                 throw;
             }
 
-            return toDoItemBase;
+            return userBase;
         }
 
-        // PATCH: api/TodoItems/5
-        public async Task<ActionResult<DTO>> UpdateToDoItem(long id, DTO todoItemDTO)
+        // PATCH: api/Users/5
+        public async Task<ActionResult<DTO>> UpdateUser(long id, DTO userDTO)
         {
-            var todoItem = await _table.FindAsync(id);
-            if (todoItem == null)
+            var user = await _table.FindAsync(id);
+            if (user == null)
             {
-                return todoItem;
+                return user;
             }
 
-            ModifyToDoItemDTO(todoItem, todoItemDTO);
+            ModifyUserDTO(user, userDTO);
             
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException) when (!ToDoItemExists(id))
+            catch (DbUpdateConcurrencyException) when (!UserExists(id))
             {
                 throw;
             }
 
-            return todoItemDTO;
+            return userDTO;
         }
 
-        // POST: api/TodoItems
-        public async Task<ActionResult<T>> CreateToDoItem(DTO toDoItemDTO)
+        // POST: api/Users
+        public async Task<ActionResult<T>> CreateUser(DTO userDTO)
         {
-            T toDoItem = DTOToItem(toDoItemDTO);
+            T user = UserDTOToUser(userDTO);
             try
             {
-                _table.Add(toDoItem);
+                _table.Add(user);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
@@ -93,115 +93,46 @@ namespace WEB_API.Infrastructure
                 throw;
             }
 
-            return toDoItem;
+            return user;
         }
 
-        // DELETE: api/TodoItems/5
-        public async Task<ActionResult<DTO>> DeleteToDoItem(long id)
+        // DELETE: api/Users/5
+        public async Task<ActionResult<DTO>> DeleteUser(long id)
         {
-            var todoItem = await _table.FindAsync(id);
-            if (todoItem == null)
+            var user = await _table.FindAsync(id);
+            if (user == null)
             {
-                return todoItem;
+                return user;
             }
 
-            _table.Remove(todoItem);
+            _table.Remove(user);
             await _context.SaveChangesAsync();
 
-            return ItemToDTO(todoItem);
+            return UserToUserDTO(user);
         }
 
-        private bool ToDoItemExists(long id)
+        private bool UserExists(long id)
         {
             if (_table.Find(id) != null)
                 return true;
             
             return false;
         }
-        public virtual DTO ItemToDTO(T toDoItem)
+        public virtual DTO UserToUserDTO(T user)
         {
-            DTO toDoItemDTO = toDoItem;
-            return toDoItemDTO;
+            DTO userDTO = user;
+            return userDTO;
         }
-        public virtual T DTOToItem(DTO toDoItemDTO)
+        public virtual T UserDTOToUser(DTO userDTO)
         {
-            T toDoItem = (T)toDoItemDTO;
-            return toDoItem;
+            T user = (T)userDTO;
+            return user;
         }
-        public virtual void ModifyToDoItemDTO(DTO toDoItemBase, DTO toDoItem)
-        {
-        }
-        public virtual void ModifyToDoItem(T toDoItemBase, T toDoItem)
+        public virtual void ModifyUserDTO(DTO userBase, DTO user)
         {
         }
-
-
-
-
-
-
-
-
-
-        //public DbContext _context;
-        //public DbSet<T> _table;
-
-        //public GenericRepository(ToDoContext toDoContext)
-        //{
-        //    _context = toDoContext;
-        //    _table = _context.Set<T>();
-        //}
-
-        //public IEnumerable<T> FindAll()
-        //{
-        //    return _table.AsNoTracking().ToList();
-        //}
-        //public IEnumerable<T> FindByPredicate(Func<T, bool> predicate)
-        //{
-        //    return _table.Where(predicate).ToList();
-        //}
-        //public T FindById(int id)
-        //{
-        //    return _table.Find(id);
-        //}
-        //public void Insert(T obj)
-        //{
-        //    _table.Add(obj);
-        //}
-        //public void InsertRange(params T[] obj)
-        //{
-
-        //    foreach (var o in obj)
-        //    {
-        //        _table.Add(o);
-        //    }
-        //}
-        //public void Update(T obj)
-        //{
-        //    _table.Update(obj);
-        //}
-        //public bool Delete(int id)
-        //{
-        //    T existing = _table.Find(id);
-        //    if (existing != null)
-        //    {
-        //        _table.Remove(existing);
-        //        return true;
-        //    }
-        //    return false;
-        //}
-        //public bool Delete(T obj)
-        //{
-        //    if (obj != null)
-        //    {
-        //        _table.Remove(obj);
-        //        return true;
-        //    }
-        //    return false;
-        //}
-        //public void Save()
-        //{
-        //    _context.SaveChanges();
-        //}
+        public virtual void ModifyUser(T userBase, T user)
+        {
+        }
     }
 }

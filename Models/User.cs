@@ -7,13 +7,8 @@ using WEB_API.DTO;
 
 namespace WEB_API.Models
 {
-    public class ToDoItem : ToDoItemDTO
+    public class User : UserDTO
     {
         public string Secret { get; set; }
-
-        public static implicit operator ToDoItem(ActionResult<ToDoItem> v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
