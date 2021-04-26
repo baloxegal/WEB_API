@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WEB_API.DTO;
+using WEB_API.Exceptions;
 using WEB_API.Infrastructure;
 using WEB_API.Models;
 
@@ -98,6 +99,7 @@ namespace WEB_API.Controllers
 
         // POST: api/Users
         [HttpPost]
+        [ApiExceptionsFilter]
         public async Task<ActionResult<UserDTO>> CreateUser(UserDTO toDoItemDTO)
         {
             User user = null;

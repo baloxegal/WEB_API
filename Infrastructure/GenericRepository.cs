@@ -90,7 +90,7 @@ namespace WEB_API.Infrastructure
             }
             catch (DbUpdateException)
             {
-                throw;
+                throw new DbUpdateException("Same Id exist!");
             }
 
             return user;
